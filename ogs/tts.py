@@ -26,7 +26,7 @@ def synthesize(text):
     response = requests.post(endpoint, headers=headers, json=body)
 
     if response.status_code == 200:
-        with open("C:\\Users\\pgril\\Documents\\gpt\\output.mp3", "wb") as f:
+        with open("ogs\\output.mp3", "wb") as f:
             f.write(response.content)
         print("✅ Audio saved to output.mp3")
     else:
@@ -34,4 +34,6 @@ def synthesize(text):
 
 
 # Example usage
-synthesize("Do not go gentle into that good night. Old age should burn and rave at close of day; Rage, rage against the dying of the light. Though wise men at their end know dark is right, Because their words had forked no lightning they Do not go gentle into that good night. Rage, rage against the dying of the light.")
+#synthesize("Do not go gentle into that good night. Old age should burn and rave at close of day; Rage, rage against the dying of the light. Though wise men at their end know dark is right, Because their words had forked no lightning they Do not go gentle into that good night. Rage, rage against the dying of the light.")
+
+synthesize("Amor é um fogo que arde sem se ver, É ferida que dói, e não se sente; É um contentamento descontente É dor que desatina sem doer.")

@@ -3,7 +3,7 @@ from openai import AzureOpenAI
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 # --- Azure Config ---
-AUDIO_FILE = "C:\\Users\\pgril\\Documents\\gpt\\ian-mckellen-sample.wav"
+AUDIO_FILE = "voice.webm"
 endpoint = os.getenv("ENDPOINT_URL", "https://isctesintra-alunos.openai.azure.com/")
 deployment = os.getenv("WHISPER_DEPLOYMENT", "whisper")
 
@@ -24,7 +24,7 @@ with open(AUDIO_FILE, "rb") as audio_file:
     transcription = client.audio.transcriptions.create(
         file=audio_file,
         model=deployment,
-        language="en",  # Optional, auto-detect if omitted
+        language="pt",  # Optional, auto-detect if omitted
         response_format="text",
     )
 
