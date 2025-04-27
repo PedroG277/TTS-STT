@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from whisper import whisper
 from gpt import gpt
+from gpt import clearHistory
 from tts import synthesize
 
 app = Flask(__name__)
@@ -11,6 +12,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
+    clearHistory()
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
@@ -35,14 +37,21 @@ def generateResponse():
     result = gpt(prompt)
     return jsonify({"response": result})
 
+
+    
+
 @app.route('/textToAudio', methods=['POST'])
 def textToAudio():
     data = request.get_json()
     text = data.get('text')
+    voice = data.get('voice', 'onyx') #defaut to onyx if error or omitted
 
     print(text)
 
-    return synthesize(text)  
+    return synthesize(text, voice)  
+
+
+
 
 
 if __name__ == '__main__':

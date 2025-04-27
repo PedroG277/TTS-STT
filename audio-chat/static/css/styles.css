@@ -22,12 +22,14 @@ body, html {
 }
 
 .message-a {
-  background-color: #e9ecef;
+  background-color: #0d6efd;
+  color: white;
+
+
 }
 
 .message-b {
-  background-color: #0d6efd;
-  color: white;
+  background-color: #e9ecef;
 }
 
 #chatBox {
@@ -55,11 +57,11 @@ body, html {
 }
 
 .a {
-  align-self: flex-start;
+  align-self: flex-end;
 }
 
 .b {
-  align-self: flex-end;
+  align-self: flex-start;
 }
 
 .btn {
@@ -73,4 +75,11 @@ body, html {
 
 .form-control {
   border-radius: 20px;
+}
+
+
+.voice-dropdown {
+  border-radius: 50px;
+  border-color: #6c757d;
+  color: #6c757d;
 }

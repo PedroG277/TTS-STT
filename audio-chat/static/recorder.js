@@ -99,6 +99,7 @@ async function genereateResponse(text) {
 function addLoading(side) {
     loading = createLoadingElement(side)
     chatBox.appendChild(loading)
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function removeLoading() {
@@ -108,6 +109,7 @@ function removeLoading() {
 
 function addRecording(side) {
     chatBox.appendChild(recording)
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function removeRecording() {
@@ -125,20 +127,26 @@ function addMessage(text, sender) {
 
     // If sender is B, add button
     if (sender === "b") {
+        const buttonsWrapper = document.createElement('div');
+        buttonsWrapper.classList.add("d-flex")
+
         const btn = document.createElement("button");
-        btn.classList.add("btn", "btn-sm", "btn-outline-secondary", "d-flex", "align-items-center", "listen-btn");
+        btn.classList.add("btn", "btn-sm", "btn-outline-secondary", "d-flex", "me-2", "align-items-center", "listen-btn");
 
         btn.onclick = async () => {
             btn.classList.add("d-none")
+            voiceSelect.classList.add('d-none')
             loadingListen = createLoadingListenElement()
             messageWrapper.appendChild(loadingListen)
+
+            voice = voiceSelect.value
 
             await fetch("/textToAudio", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, voice: voice })
             })
             .then(response => response.blob())
             .then(blob => {
@@ -150,6 +158,7 @@ function addMessage(text, sender) {
 
             loadingListen.remove()
             btn.classList.remove("d-none")
+            voiceSelect.classList.remove("d-none")
         };
 
         const svg = document.createElement("img");
@@ -161,8 +170,27 @@ function addMessage(text, sender) {
 
         btn.appendChild(svg)
         btn.appendChild(document.createTextNode("Listen"))
-    
-        messageWrapper.appendChild(btn)
+
+
+        const voiceSelect = document.createElement('select');
+        voiceSelect.classList.add('form-select', 'form-select-sm', 'voice-dropdown');
+        voiceSelect.style.width = "auto";
+        voiceSelect.innerHTML = `
+            <option value="onyx">Onyx</option>
+            <option value="nova">Nova</option>
+            <option value="echo">Echo</option>
+            <option value="fable">Fable</option>
+            <option value="shimmer">Shimmer</option>
+            <option value="alloy">Alloy</option>
+        `;
+
+        buttonsWrapper.appendChild(btn)
+        buttonsWrapper.appendChild(voiceSelect)
+        messageWrapper.appendChild(buttonsWrapper)
+
+        // messageWrapper.appendChild(btn)
+        // messageWrapper.appendChild(voiceSelect)
+
 
     }
 
@@ -222,7 +250,7 @@ function createLoadingElement(side) {
 
 function createRecordingElement() {
     const recordingDiv = document.createElement('div');
-    recordingDiv.className = 'message message-a loading recording d-flex align-items-center gap-2';
+    recordingDiv.className = 'message message-a loading recording d-flex a align-items-center gap-2';
 
     const svg = document.createElement("img");
     svg.src = "/static/icons/microphone.svg";
