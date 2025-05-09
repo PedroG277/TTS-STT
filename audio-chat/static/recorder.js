@@ -128,25 +128,79 @@ function addMessage(text, sender) {
     // If sender is B, add button
     if (sender === "b") {
         const buttonsWrapper = document.createElement('div');
-        buttonsWrapper.classList.add("d-flex")
+        buttonsWrapper.classList.add("d-flex", "align-items-center", "gap-2");
 
+        // === LISTEN BUTTON ===
         const btn = document.createElement("button");
-        btn.classList.add("btn", "btn-sm", "btn-outline-secondary", "d-flex", "me-2", "align-items-center", "listen-btn");
+        btn.classList.add("btn", "btn-sm", "btn-outline-secondary", "d-flex", "align-items-center", "listen-btn");
 
+        const svg = document.createElement("img");
+        svg.src = "/static/icons/audio.svg";
+        svg.alt = "Listen";
+        svg.style.width = "24px";
+        svg.style.height = "24px";
+        svg.classList.add("me-1");
+
+        btn.appendChild(svg);
+        btn.appendChild(document.createTextNode("Listen"));
+
+        // === MODEL SELECT ===
+        const modelSelect = document.createElement('select');
+        modelSelect.classList.add('form-select', 'form-select-sm', 'voice-dropdown');
+        modelSelect.style.width = "auto";
+        modelSelect.innerHTML = `
+            <option value="azure">Azure</option>
+            <option value="elevenlabs">ElevenLabs</option>
+        `;
+
+
+        // === VOICE SELECT ===
+        const voiceSelect = document.createElement('select');
+        voiceSelect.classList.add('form-select', 'form-select-sm', 'voice-dropdown');
+        voiceSelect.style.width = "auto";
+
+        const voiceOptions = {
+            azure: ['onyx', 'nova', 'echo', 'fable', 'shimmer', 'alloy'],
+            elevenlabs: ['Paulo']
+        };
+
+        // Function to update voice options
+        function updateVoiceOptions(model) {
+            voiceSelect.innerHTML = '';
+            voiceOptions[model].forEach(voice => {
+                const opt = document.createElement("option");
+                opt.value = voice;
+                opt.textContent = voice;
+                voiceSelect.appendChild(opt);
+            });
+        }
+
+        // Initial voice options
+        updateVoiceOptions(modelSelect.value);
+
+        // Change voice options when model changes
+        modelSelect.addEventListener('change', () => {
+            updateVoiceOptions(modelSelect.value);
+        });
+
+        // === LISTEN LOGIC ===
         btn.onclick = async () => {
-            btn.classList.add("d-none")
-            voiceSelect.classList.add('d-none')
-            loadingListen = createLoadingListenElement()
-            messageWrapper.appendChild(loadingListen)
+            btn.classList.add("d-none");
+            modelSelect.classList.add("d-none");
+            voiceSelect.classList.add("d-none");
 
-            voice = voiceSelect.value
+            loadingListen = createLoadingListenElement();
+            messageWrapper.appendChild(loadingListen);
+
+            const selectedVoice = voiceSelect.value;
+            const selectedModel = modelSelect.value;
 
             await fetch("/textToAudio", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json"
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ text: text, voice: voice })
+                body: JSON.stringify({ text: text, model: selectedModel, voice: selectedVoice })
             })
             .then(response => response.blob())
             .then(blob => {
@@ -156,43 +210,17 @@ function addMessage(text, sender) {
             })
             .catch(err => console.error("❌ Error playing audio:", err));
 
-            loadingListen.remove()
-            btn.classList.remove("d-none")
-            voiceSelect.classList.remove("d-none")
+            loadingListen.remove();
+            btn.classList.remove("d-none");
+            modelSelect.classList.remove("d-none");
+            voiceSelect.classList.remove("d-none");
         };
 
-        const svg = document.createElement("img");
-        svg.src = "/static/icons/audio.svg";
-        svg.alt = "Listen";
-        svg.style.width = "24px";
-        svg.style.height = "24px";
-        svg.classList.add("me-1")
-
-        btn.appendChild(svg)
-        btn.appendChild(document.createTextNode("Listen"))
-
-
-        const voiceSelect = document.createElement('select');
-        voiceSelect.classList.add('form-select', 'form-select-sm', 'voice-dropdown');
-        voiceSelect.style.width = "auto";
-        voiceSelect.innerHTML = `
-            <option value="onyx">Onyx</option>
-            <option value="nova">Nova</option>
-            <option value="echo">Echo</option>
-            <option value="fable">Fable</option>
-            <option value="shimmer">Shimmer</option>
-            <option value="alloy">Alloy</option>
-        `;
-
-        buttonsWrapper.appendChild(btn)
-        buttonsWrapper.appendChild(voiceSelect)
-        messageWrapper.appendChild(buttonsWrapper)
-
-        // messageWrapper.appendChild(btn)
-        // messageWrapper.appendChild(voiceSelect)
-
-
-    }
+        buttonsWrapper.appendChild(btn);
+        buttonsWrapper.appendChild(modelSelect);
+        buttonsWrapper.appendChild(voiceSelect);
+        messageWrapper.appendChild(buttonsWrapper);
+    }   
 
     chatBox.appendChild(messageWrapper);
     chatBox.scrollTop = chatBox.scrollHeight

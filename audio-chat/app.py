@@ -5,6 +5,7 @@ from whisper import whisper
 from gpt import gpt
 from gpt import clearHistory
 from tts import synthesize
+from elevenLabs import elevenLabs_synthesize
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
@@ -44,11 +45,16 @@ def generateResponse():
 def textToAudio():
     data = request.get_json()
     text = data.get('text')
+    model = data.get('model')
     voice = data.get('voice', 'onyx') #defaut to onyx if error or omitted
+
+    if (model == "azure") :
+        return synthesize(text, voice)  
+    elif (model == "elevenlabs"):
+        return elevenLabs_synthesize(text, voice)  
 
     print(text)
 
-    return synthesize(text, voice)  
 
 
 
